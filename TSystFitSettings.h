@@ -14,6 +14,7 @@ public:
     TSystFitSettings(Int_t fNParams = 0);
     TSystFitSettings(std::vector<TSystFitParameter> params) : fParams(params){ fNParams = (Int_t)fParams.size(); };
 
+    void AddParameter(TSystFitParameter param){ fNParams++; fParams.push_back(param); };
     Bool_t SetParameter(Int_t iParam, TSystFitParameter param);
     TSystFitParameter GetParameter(Int_t iParam){ return fParams[iParam]; };
 
