@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.7)
+project(TSystFitter)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(SOURCE_FILES
+        LICENSE.md
+        README.md TH1Syst.cxx TH1Syst.h TSystFitSettings.cxx TSystFitSettings.h TSystFitParameter.cxx TSystFitParameter.h)
+
+include_directories(.
+        /usr/include
+        /Users/Gabriele/alice_sw/sw/osx_x86-64/ROOT/v5-34-30-alice7-1/include
+        /usr/local/opt/libiomp/include/libiomp)
+
+add_executable(TSystFitter ${SOURCE_FILES} TH1Syst.cxx TH1Syst.h TSystFitSettings.cxx TSystFitSettings.h)
