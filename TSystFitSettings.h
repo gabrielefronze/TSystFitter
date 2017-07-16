@@ -12,14 +12,16 @@
 class TSystFitSettings {
 public:
     TSystFitSettings(Int_t fNParams = 0);
-    TSystFitSettings(std::vector<TSystFitParameter> params) : fParams(params){ fNParams = (Int_t)fParams.size(); };
+    TSystFitSettings(std::vector<TSystFitParameter> params) : fParams(params){};
 
-    void AddParameter(TSystFitParameter param){ fNParams++; fParams.push_back(param); };
+    void AddParameter(TSystFitParameter param){ fParams.push_back(param); };
     Bool_t SetParameter(Int_t iParam, TSystFitParameter param);
+    Bool_t SetParameters(TF1 *f1);
     TSystFitParameter GetParameter(Int_t iParam){ return fParams[iParam]; };
+    inline ULong_t GetNParams(){ return (ULong_t)fParams.size(); };
+    ULong_t GetNCombinations();
 
 private:
-    Int_t fNParams;
     std::vector<TSystFitParameter> fParams;
 };
 
