@@ -6,8 +6,8 @@
 #include "TH1D.h"
 
 //TODO: make the method adaptive. It will scan the input distribution to adapt the x values to its derivative.
-//TODO: this will grant to keep track of repentine oscillations
-TSystFitParameter::TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive)  : fParamType(kDistribution) {
+//TODO: this will grant to keep track of fast oscillations
+TSystFitParameter::TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive)  : fParamType(kDistribution),fIndex(0) {
     std::vector<ParamValue> localParamValues;
 
     Double_t xMin, xMax;
