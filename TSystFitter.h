@@ -2,30 +2,26 @@
 // Created by Gabriele Gaetano Fronzé on 25/06/2017.
 //
 
-#ifndef TSYSTFITTER_TH1SYST_H
-#define TSYSTFITTER_TH1SYST_H
+#ifndef TSYSTFITTER_H
+#define TSYSTFITTER_H
 
 #include "TH1.h"
 #include "TSystFitSettings.h"
 #include <vector>
 
-class TH1Syst : public TH1 {
+class TSystFitter {
 
 public:
-    TH1Syst() : TH1(){};
-    TH1Syst(const char *name, const char *title, Int_t nbinsx, Double_t xlow, Double_t xup) : TH1(name, title, nbinsx, xlow, xup) {};
-    TH1Syst(const char *name, const char *title, Int_t nbinsx, const Float_t *xbins) : TH1(name, title, nbinsx, xbins) {};
-    TH1Syst(const char *name, const char *title, Int_t nbinsx, const Double_t *xbins) : TH1(name, title, nbinsx, xbins) {};
-    TH1Syst(const TH1Syst &hist) : TH1(hist){};
+    TSystFitter(TH1 *histToFit) : fHistToFit((TH1*)histToFit->Clone("histToFit")){};
 
-    virtual ~TH1Syst() {};
+    ~TSystFitter() { delete fHistToFit; };
 
     void SetSystFitSettings(TSystFitSettings settings){ fSystFitSettings = settings; };
     void SetSystFitSettings(std::vector<TSystFitParameter> params){ fSystFitSettings = TSystFitSettings(params); };
 
     //TODO: this methods should also get a SystFitSettings object.
     //TODO: To check that the number of parameters of the function and the lenght of settings is the same
-    void SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
+    bool SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
     void SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
 
     std::vector<TFitResultPtr> GetFitResults(){ return fFitResultsVector; };
@@ -33,9 +29,11 @@ public:
 private:
     std::vector<TFitResultPtr> fFitResultsVector;
     TSystFitSettings fSystFitSettings;
+    TH1 *fHistToFit;
+    void SetConfiguration(TF1 *f1, std::vector<ParamValue> config);
 
 
 };
 
 
-#endif //TSYSTFITTER_TH1SYST_H
+#endif //TSYSTFITTER_H

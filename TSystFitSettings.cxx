@@ -9,6 +9,60 @@ TSystFitSettings::TSystFitSettings(Int_t nParams){
     fParams.reserve((unsigned long long)nParams);
 }
 
+void TSystFitSettings::GenerateConfigurations(){
+    const int nPar = fParams.size();
+
+    std::vector<int> state;
+    state.reserve(nPar);
+    std::vector<int> config;
+    config.reserve(nPar);
+    std::vector<int> limits;
+    limits.reserve(nPar);
+
+    for (int iPar = 0; iPar < nPar; ++iPar) {
+        state[iPar]=0;
+        config[iPar]=0;
+        limits[iPar]=(int)fParams[iPar].GetNValues();
+    }
+
+    bool done = false;
+    int nConfig = 0;
+
+    fConfigurations.push_back(config);
+
+    while (true) {
+        for (int iPar = 0; iPar < nPar; ++iPar) {
+            if (config[iPar] + 1 < limits[iPar]){
+                state[iPar] = 1;
+                break;
+            }
+        }
+
+        int fillValue = -1;
+        for (int iPar = 0; iPar < nPar; ++iPar) {
+            if (state[iPar] == 1) {
+                fillValue = 0;
+                continue;
+            }
+            state[iPar] = fillValue;
+        }
+        if (state[nPar-1]==-1) break;
+
+        for (int iPar = 0; iPar < nPar; ++iPar) {
+            if (state[iPar] == 1) config[iPar]++;
+            else if (state[iPar] == -1) config[iPar] = 0;
+        }
+
+        fConfigurations.push_back(config);
+
+        for (int iPar = 0; iPar < nPar; ++iPar) {
+            state[iPar] = 0;
+        }
+    }
+
+    std::cout<<nConfig+1<<" configurations "<<((nConfig+1 == GetNConfigurations())?"correctly":"badly")<<" generated!"<<std::endl;
+}
+
 Bool_t TSystFitSettings::SetParameter(Int_t iParam, TSystFitParameter param){
     if ( iParam > fParams.size() ) return kFALSE;
     else{
@@ -17,45 +71,19 @@ Bool_t TSystFitSettings::SetParameter(Int_t iParam, TSystFitParameter param){
     }
 }
 
-Bool_t TSystFitSettings::SetParameters(TF1 *f1){
-    auto nPar = fParams.size();
-    auto nParOK = (f1->GetNpar() == nPar);
+std::vector<ParamValue> TSystFitSettings::GetConfiguration(int iConfig){
+    std::vector<ParamValue> returnConfig;
 
-    if ( !nParOK ) return false;
+    auto config = fConfigurations[iConfig];
 
-    std::vector<int> parWithMultipleValues;
-
-    for (int iPar = 0; iPar < nPar; ++iPar) {
-
-        auto parValue = fParams[iPar].GetValue();
-
-        switch (fParams[iPar].GetType()){
-            case ParamType::kListOfValues: parWithMultipleValues.push_back(iPar);
-            case ParamType::kDistribution: parWithMultipleValues.push_back(iPar);
-            case ParamType::kFix: {
-                f1->SetParameter(iPar,parValue.fValue);
-                f1->SetParLimits(iPar,parValue.fValue,parValue.fValue);
-            };
-            case ParamType::kStandard:{
-                f1->SetParameter(iPar,parValue.fValue);
-                f1->SetParLimits(iPar,parValue.fLowerLimit,parValue.fUpperLimit);
-            };
-            case ParamType::kNone:{
-                f1->SetParameter(iPar,0.);
-                f1->SetParLimits(iPar,0.,0.);
-            };
-            default:{
-                f1->SetParameter(iPar,0.);
-                f1->SetParLimits(iPar,0.,0.);
-            };
-        }
+    for (int iPar = 0; iPar < config.size(); ++iPar) {
+        returnConfig.push_back(fParams[iPar].GetValue((UInt_t)config[iPar]));
     }
 
-    //TODO: We have to handle every possible combination of the multi-valued parameters: recursive function?
-    auto nComb = GetNCombinations();
+    return returnConfig;
 }
 
-ULong_t TSystFitSettings::GetNCombinations() {
+ULong_t TSystFitSettings::GetNConfigurations() {
     ULong_t nComb = 1;
 
     for(auto &itPar : fParams){
