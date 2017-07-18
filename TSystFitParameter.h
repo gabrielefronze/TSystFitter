@@ -37,7 +37,7 @@ public:
 
     TSystFitParameter() : fParamType(kNone),fIndex(0){};
     TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues = paramValues; };
-    TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.push_back(ParamValue(fixedValue,0.,0.)); };
+    TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.push_back(ParamValue(fixedValue,fixedValue,fixedValue)); };
     TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(ParamValue(data)); };
     TSystFitParameter(ParamValue paramValue) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(paramValue); };
     TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
