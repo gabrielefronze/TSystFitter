@@ -21,7 +21,7 @@ public:
 
     //TODO: this methods should also get a SystFitSettings object.
     //TODO: To check that the number of parameters of the function and the lenght of settings is the same
-    bool SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
+    void SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
     void SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
 
     std::vector<TFitResultPtr> GetFitResults(){ return fFitResultsVector; };
