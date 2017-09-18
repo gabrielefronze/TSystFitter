@@ -21,6 +21,11 @@ struct ParamValue{
     Double_t fValue;
     Double_t fUpperLimit;
     Double_t fLowerLimit;
+    ParamValue(){
+        fValue = 0.;
+        fUpperLimit = 0.;
+        fLowerLimit = 0.;
+    }
     ParamValue(Double_t value, Double_t upperLimit, Double_t lowerLimit){
         fValue = value;
         fUpperLimit = upperLimit;

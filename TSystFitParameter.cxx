@@ -27,8 +27,8 @@ TSystFitParameter::TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive
         Double_t lowerBound = (bounds[0]<bounds[1])?bounds[0]:bounds[1];
         Double_t upperBound = (bounds[1]>bounds[0])?bounds[1]:bounds[0];
 
-        localParamValues.push_back(ParamValue(value,lowerBound,upperBound));
+        localParamValues.emplace_back(value,lowerBound,upperBound);
     }
 
-    TSystFitParameter::TSystFitParameter(localParamValues);
+    fParamValues = std::move(localParamValues);
 }
