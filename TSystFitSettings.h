@@ -19,8 +19,9 @@ public:
     void GenerateConfigurations();
 
     inline void AddParameter(const TSystFitParameter &param){ fParams.push_back(param); };
-    Bool_t SetParameter(Int_t iParam, TSystFitParameter param);
-    Bool_t SetParameters(TF1 *f1);
+
+    Bool_t SetParameter(ULong_t iParam, TSystFitParameter param);
+
     TSystFitParameter GetParameter(Int_t iParam){ return fParams[iParam]; };
     inline ULong_t GetNParams(){ return (ULong_t)fParams.size(); };
     ULong_t GetNConfigurations();
