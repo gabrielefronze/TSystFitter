@@ -7,12 +7,14 @@
 
 #include "Rtypes.h"
 #include "TSystFitParameter.h"
+#include <utility>
 #include <vector>
 
 class TSystFitSettings {
 public:
-    TSystFitSettings(Int_t fNParams = 0);
-    TSystFitSettings(std::vector<TSystFitParameter> params) : fParams(params){};
+    explicit TSystFitSettings(Int_t fNParams = 0);
+
+    explicit TSystFitSettings(std::vector<TSystFitParameter> params) : fParams(std::move(params)){};
 
     void GenerateConfigurations();
 

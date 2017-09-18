@@ -2,6 +2,8 @@
 // Created by Gabriele Gaetano Fronzé on 25/06/2017.
 //
 
+#include <utility>
+
 #include "TSystFitSettings.h"
 #include "TSystFitParameter.h"
 
@@ -66,7 +68,7 @@ void TSystFitSettings::GenerateConfigurations(){
 Bool_t TSystFitSettings::SetParameter(Int_t iParam, TSystFitParameter param){
     if ( iParam > fParams.size() ) return kFALSE;
     else{
-        fParams[iParam] = param;
+        fParams[iParam] = std::move(param);
         return kTRUE;
     }
 }
