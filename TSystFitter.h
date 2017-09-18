@@ -12,7 +12,7 @@
 class TSystFitter {
 
 public:
-    TSystFitter(TH1 *histToFit) : fHistToFit((TH1*)histToFit->Clone("histToFit")){};
+    explicit TSystFitter(TH1 *histToFit) : fHistToFit((TH1*)histToFit->Clone("histToFit")){};
 
     ~TSystFitter() { delete fHistToFit; };
 
