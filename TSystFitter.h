@@ -18,6 +18,7 @@ public:
 
     void SetSystFitSettings(TSystFitSettings settings){ fSystFitSettings = settings; };
     void SetSystFitSettings(std::vector<TSystFitParameter> params){ fSystFitSettings = TSystFitSettings(params); };
+
     void SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
     void SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
 
@@ -32,5 +33,8 @@ private:
 
 };
 
+//TODO: maybe the fitting function should be placed inside TSystFitSettings
+//TODO: several TSystFitSettings will contain different functions
+//TODO: the extrapolation at a certain value will be given with stat and syst error taking into account all fit results
 
 #endif //TSYSTFITTER_H
