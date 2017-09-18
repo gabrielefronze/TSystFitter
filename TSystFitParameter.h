@@ -6,6 +6,7 @@
 #define TSYSTFITTER_TSYSTFITPARAMETER_H
 
 #include "TF1.h"
+#include <utility>
 #include <vector>
 
 enum ParamType{
@@ -36,11 +37,12 @@ class TSystFitParameter {
 public:
 
     TSystFitParameter() : fParamType(kNone),fIndex(0){};
-    TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues = paramValues; };
-    TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.push_back(ParamValue(fixedValue,fixedValue,fixedValue)); };
-    TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(ParamValue(data)); };
-    TSystFitParameter(ParamValue paramValue) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(paramValue); };
+
     TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
+    explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues = std::move(paramValues); };
+    explicit TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.push_back(ParamValue(fixedValue,fixedValue,fixedValue)); };
+    explicit TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(ParamValue(data)); };
+    explicit TSystFitParameter(ParamValue paramValue) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(paramValue); };
 
     inline const ULong_t GetNValues(){ return fParamValues.size(); };
     inline const ParamType GetType(){ return fParamType; };
