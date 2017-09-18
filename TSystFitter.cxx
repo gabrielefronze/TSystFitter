@@ -17,7 +17,7 @@ void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t
 
 void TSystFitter::SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax){
 
-    TF1 *f1 = new TF1("f1",formula,xmin,xmax);
+    auto *f1 = new TF1("f1",formula,xmin,xmax);
 
     auto nConfig = fSystFitSettings.GetNConfigurations();
 
