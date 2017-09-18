@@ -31,8 +31,7 @@ struct ParamValue{
         fUpperLimit = upperLimit;
         fLowerLimit = lowerLimit;
     }
-
-    explicit ParamValue(Double_t data[3]){
+    explicit ParamValue(const Double_t data[3]){
         fValue = data[0];
         fUpperLimit = data[1];
         fLowerLimit = data[2];
