@@ -12,7 +12,7 @@ TSystFitSettings::TSystFitSettings(Int_t nParams){
 }
 
 void TSystFitSettings::GenerateConfigurations(){
-    const int nPar = fParams.size();
+    const unsigned long nPar = fParams.size();
 
     std::vector<int> state;
     state.reserve(nPar);
@@ -78,8 +78,10 @@ std::vector<ParamValue> TSystFitSettings::GetConfiguration(int iConfig){
 
     auto config = fConfigurations[iConfig];
 
+    returnConfig.reserve(config.size());
+
     for (int iPar = 0; iPar < config.size(); ++iPar) {
-        returnConfig.push_back(fParams[iPar].GetValue((UInt_t)config[iPar]));
+        returnConfig.emplace_back(fParams[iPar].GetValue((UInt_t)config[iPar]));
     }
 
     return returnConfig;
