@@ -42,7 +42,7 @@ struct ParamValue{
 class TSystFitParameter {
 public:
 
-    TSystFitParameter() = default;
+    TSystFitParameter() : fParamType(kNone),fIndex(0){};
 
     TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
     explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues = std::move(paramValues); };
@@ -58,8 +58,8 @@ public:
 
 private:
     std::vector<ParamValue> fParamValues;
-    UInt_t fIndex{0};
-    ParamType fParamType{kNone};
+    UInt_t fIndex;
+    ParamType fParamType;
 };
 
 
