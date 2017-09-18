@@ -21,19 +21,19 @@ void TSystFitSettings::GenerateConfigurations(){
     std::vector<int> limits;
     limits.reserve(nPar);
 
-    for (int iPar = 0; iPar < nPar; ++iPar) {
+    for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
         state[iPar]=0;
         config[iPar]=0;
         limits[iPar]=(int)fParams[iPar].GetNValues();
     }
 
     bool done = false;
-    int nConfig = 0;
+    ULong_t nConfig = 0;
 
     fConfigurations.push_back(config);
 
     while (true) {
-        for (int iPar = 0; iPar < nPar; ++iPar) {
+        for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
             if (config[iPar] + 1 < limits[iPar]){
                 state[iPar] = 1;
                 break;
@@ -41,7 +41,7 @@ void TSystFitSettings::GenerateConfigurations(){
         }
 
         int fillValue = -1;
-        for (int iPar = 0; iPar < nPar; ++iPar) {
+        for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
             if (state[iPar] == 1) {
                 fillValue = 0;
                 continue;
@@ -50,14 +50,14 @@ void TSystFitSettings::GenerateConfigurations(){
         }
         if (state[nPar-1]==-1) break;
 
-        for (int iPar = 0; iPar < nPar; ++iPar) {
+        for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
             if (state[iPar] == 1) config[iPar]++;
             else if (state[iPar] == -1) config[iPar] = 0;
         }
 
         fConfigurations.push_back(config);
 
-        for (int iPar = 0; iPar < nPar; ++iPar) {
+        for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
             state[iPar] = 0;
         }
     }
@@ -65,7 +65,7 @@ void TSystFitSettings::GenerateConfigurations(){
     std::cout<<nConfig+1<<" configurations "<<((nConfig+1 == GetNConfigurations())?"correctly":"badly")<<" generated!"<<std::endl;
 }
 
-Bool_t TSystFitSettings::SetParameter(Int_t iParam, TSystFitParameter param){
+Bool_t TSystFitSettings::SetParameter(ULong_t iParam, TSystFitParameter param){
     if ( iParam > fParams.size() ) return kFALSE;
     else{
         fParams[iParam] = std::move(param);
@@ -80,7 +80,7 @@ std::vector<ParamValue> TSystFitSettings::GetConfiguration(int iConfig){
 
     returnConfig.reserve(config.size());
 
-    for (int iPar = 0; iPar < config.size(); ++iPar) {
+    for (unsigned long iPar = 0; iPar < config.size(); ++iPar) {
         returnConfig.emplace_back(fParams[iPar].GetValue((UInt_t)config[iPar]));
     }
 

@@ -6,7 +6,7 @@
 
 void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax) {
 
-    if ( f1->GetNpar() != fSystFitSettings.GetNParams() ){
+    if ( (ULong_t)(f1->GetNpar()) != fSystFitSettings.GetNParams() ){
         std::cout<<"ERROR: Wrong number of parameters. Aborting.";
         return;
     }
@@ -14,7 +14,7 @@ void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t
     auto nConfig = fSystFitSettings.GetNConfigurations();
     fSystFitSettings.GenerateConfigurations();
 
-    for (int iConfig = 0; iConfig < nConfig; ++iConfig) {
+    for (unsigned long iConfig = 0; iConfig < nConfig; ++iConfig) {
         SetConfiguration(f1, fSystFitSettings.GetConfiguration(iConfig));
     }
 
