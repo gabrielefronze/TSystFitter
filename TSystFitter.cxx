@@ -7,6 +7,7 @@
 void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax) {
 
     auto nConfig = fSystFitSettings.GetNConfigurations();
+    fSystFitSettings.GenerateConfigurations();
 
     for (int iConfig = 0; iConfig < nConfig; ++iConfig) {
         SetConfiguration(f1, fSystFitSettings.GetConfiguration(iConfig));
