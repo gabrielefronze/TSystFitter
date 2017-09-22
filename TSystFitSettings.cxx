@@ -55,6 +55,8 @@ void TSystFitSettings::GenerateConfigurations(){
             else if (state[iPar] == -1) config[iPar] = 0;
         }
 
+        nConfig++;
+
         fConfigurations.push_back(config);
 
         for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
