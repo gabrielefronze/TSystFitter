@@ -32,3 +32,9 @@
 cmake-build-debug/
 
 *.d
+
+*.pcm
+
+AutoDict_vector_ParamValue_\.cxx
+
+AutoDict_vector_TSystFitParameter_\.cxx
