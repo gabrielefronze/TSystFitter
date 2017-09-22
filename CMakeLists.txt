@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCE_FILES
         LICENSE.md
-        README.md TSystFitter.cxx TSystFitter.h TSystFitSettings.cxx TSystFitSettings.h TSystFitParameter.cxx TSystFitParameter.h testCombinations.cxx)
+        README.md TSystFitter.cxx TSystFitter.h TSystFitSettings.cxx TSystFitSettings.h TSystFitParameter.cxx TSystFitParameter.h testCombinations.cxx PerformSystFit.cxx CompileAllClasses.cxx)
 
 include_directories(.
         /usr/include
