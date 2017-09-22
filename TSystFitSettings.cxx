@@ -75,8 +75,10 @@ Bool_t TSystFitSettings::SetParameter(ULong_t iParam, TSystFitParameter param){
     }
 }
 
-std::vector<ParamValue> TSystFitSettings::GetConfiguration(int iConfig){
+std::vector<ParamValue> TSystFitSettings::GetConfiguration(unsigned long iConfig){
     std::vector<ParamValue> returnConfig;
+
+    if(iConfig>this->GetNConfigurations()) return returnConfig;
 
     auto config = fConfigurations[iConfig];
 
