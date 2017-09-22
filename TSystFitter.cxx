@@ -2,23 +2,24 @@
 // Created by Gabriele Gaetano Fronzé on 25/06/2017.
 //
 
+#include <TMinuit.h>
 #include "TSystFitter.h"
 
 void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax) {
 
-    if ( (ULong_t)(f1->GetNpar()) != fSystFitSettings.GetNParams() ){
+    if ( (ULong_t)(f1->GetNpar()) != fSystFitSettings->GetNParams() ){
         std::cout<<"ERROR: Wrong number of parameters. Aborting.";
         return;
     }
 
-    auto nConfig = fSystFitSettings.GetNConfigurations();
-    fSystFitSettings.GenerateConfigurations();
+    auto nConfig = fSystFitSettings->GetNConfigurations();
+    fSystFitSettings->GenerateConfigurations();
 
     for (unsigned long iConfig = 0; iConfig < nConfig; ++iConfig) {
-        SetConfiguration(f1, fSystFitSettings.GetConfiguration(iConfig));
+        SetConfiguration(f1, iConfig);
+        fFitResultsVector.emplace_back(fHistToFit->Fit(f1,option,goption,xmin,xmax),gMinuit->fCstatu.Data());
+        fFitFunctions.emplace_back(*f1);
     }
-
-    fFitResultsVector.push_back(fHistToFit->Fit(f1,option,goption,xmin,xmax));
 }
 
 void TSystFitter::SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax){
@@ -28,11 +29,22 @@ void TSystFitter::SystFit(const char *formula, Option_t *option, Option_t *gopti
     TSystFitter::SystFit(f1,option,goption,xmin,xmax);
 }
 
-void TSystFitter::SetConfiguration(TF1 *f1, std::vector<ParamValue> config){
+void TSystFitter::SetConfiguration(TF1 *f1, unsigned long iConfig){
+
+    if ( (ULong_t)(f1->GetNpar()) != fSystFitSettings->GetNParams() ){
+        std::cout<<"ERROR: Wrong number of parameters. Aborting.";
+        return;
+    }
+
     int iPar=0;
+    auto config = fSystFitSettings->GetConfiguration(iConfig);
+
+    std::cout<<"Config entries "<<config.size()<<std::endl;
+
     for(const auto &itPar : config){
         f1->SetParameter(iPar,itPar.fValue);
         f1->SetParLimits(iPar,itPar.fLowerLimit,itPar.fUpperLimit);
+        printf("Par %d set as: %f..%f..%f\n",iPar,itPar.fLowerLimit,itPar.fValue,itPar.fUpperLimit);
         iPar++;
     }
 }

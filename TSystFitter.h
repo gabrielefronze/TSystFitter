@@ -7,7 +7,9 @@
 
 #include "TH1.h"
 #include "TSystFitSettings.h"
+#include <utility>
 #include <vector>
+#include <TVirtualPad.h>
 
 class TSystFitter {
 
@@ -16,19 +18,21 @@ public:
 
     ~TSystFitter() { delete fHistToFit; };
 
-    void SetSystFitSettings(TSystFitSettings settings){ fSystFitSettings = settings; };
-    void SetSystFitSettings(std::vector<TSystFitParameter> params){ fSystFitSettings = TSystFitSettings(params); };
+    void SetSystFitSettings(TSystFitSettings *settings){ fSystFitSettings = settings; };
+    void SetSystFitSettings(std::vector<TSystFitParameter> params){ fSystFitSettings = new TSystFitSettings(std::move(params)); };
 
     void SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
     void SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax);
 
-    std::vector<TFitResultPtr> GetFitResults(){ return fFitResultsVector; };
+    std::vector<std::pair<TFitResultPtr,TString>> GetFitResults(){ return fFitResultsVector; };
+
+    std::vector<TF1> fFitFunctions;
 
 private:
-    std::vector<TFitResultPtr> fFitResultsVector;
-    TSystFitSettings fSystFitSettings;
+    std::vector<std::pair<TFitResultPtr,TString>> fFitResultsVector;
+    TSystFitSettings* fSystFitSettings;
     TH1 *fHistToFit;
-    void SetConfiguration(TF1 *f1, std::vector<ParamValue> config);
+    void SetConfiguration(TF1 *f1, unsigned long iConfig);
 
 
 };
