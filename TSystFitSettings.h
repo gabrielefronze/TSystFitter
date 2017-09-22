@@ -25,7 +25,7 @@ public:
     TSystFitParameter GetParameter(Int_t iParam){ return fParams[iParam]; };
     inline ULong_t GetNParams(){ return (ULong_t)fParams.size(); };
     ULong_t GetNConfigurations();
-    std::vector<ParamValue> GetConfiguration(int iConfig);
+    std::vector<ParamValue> GetConfiguration(unsigned long iConfig);
 
 private:
     std::vector<TSystFitParameter> fParams;
