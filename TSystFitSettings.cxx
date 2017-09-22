@@ -15,11 +15,11 @@ void TSystFitSettings::GenerateConfigurations(){
     const unsigned long nPar = fParams.size();
 
     std::vector<int> state;
-    state.reserve(nPar);
+    state.resize(nPar);
     std::vector<int> config;
-    config.reserve(nPar);
+    config.resize(nPar);
     std::vector<int> limits;
-    limits.reserve(nPar);
+    limits.resize(nPar);
 
     for (unsigned long iPar = 0; iPar < nPar; ++iPar) {
         state[iPar]=0;
