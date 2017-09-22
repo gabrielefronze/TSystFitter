@@ -26,15 +26,20 @@ struct ParamValue{
         fUpperLimit = 0.;
         fLowerLimit = 0.;
     }
-    ParamValue(Double_t value, Double_t upperLimit, Double_t lowerLimit){
+    ParamValue(Double_t value){
+        fValue = value;
+        fUpperLimit = value;
+        fLowerLimit = value;
+    }
+    ParamValue(Double_t value, Double_t lowerLimit, Double_t upperLimit){
         fValue = value;
         fUpperLimit = upperLimit;
         fLowerLimit = lowerLimit;
     }
     explicit ParamValue(const Double_t data[3]){
         fValue = data[0];
-        fUpperLimit = data[1];
-        fLowerLimit = data[2];
+        fUpperLimit = data[2];
+        fLowerLimit = data[1];
     }
 };
 
@@ -44,9 +49,9 @@ public:
     TSystFitParameter() : fParamType(kNone),fIndex(0){};
 
     TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
-    explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues = std::move(paramValues); };
-    explicit TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.emplace_back(fixedValue,fixedValue,fixedValue); };
-    explicit TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.emplace_back(data); };
+    explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues.insert(fParamValues.end(), paramValues.begin(), paramValues.end()); };
+    explicit TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.push_back(ParamValue(fixedValue,fixedValue,fixedValue)); };
+    explicit TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(ParamValue(data)); };
     explicit TSystFitParameter(ParamValue paramValue) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(paramValue); };
 
     inline const ULong_t GetNValues(){ return fParamValues.size(); };
