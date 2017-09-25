@@ -59,11 +59,13 @@ public:
     inline const ParamValue GetValue(UInt_t index=0){ return (index<fParamValues.size()) ? fParamValues[index] : ParamValue(0.,0.,0.); };
     inline const ParamValue GetNextValue(){ return (fIndex+1<fParamValues.size()) ? fParamValues[fIndex++] : ParamValue(0.,0.,0.); };
 
+    inline TF1* GetFuncky(){ return new TF1(*fSampledFuncky); };
 
 private:
     std::vector<ParamValue> fParamValues;
     UInt_t fIndex;
     ParamType fParamType;
+    TF1 *fSampledFuncky;
 };
 
 

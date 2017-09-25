@@ -12,7 +12,8 @@ TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples, Bool_t adaptiv
 
     Double_t xMin, xMax;
     xMin = xMax = 0.;
-    funcky->GetRange(xMin, xMax);
+    fSampledFuncky = new TF1(*funcky);
+    fSampledFuncky->GetRange(xMin, xMax);
 
     Double_t stepSize = (xMax - xMin)/nSamples;
 
@@ -24,8 +25,8 @@ TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples, Bool_t adaptiv
         Double_t xMinus = x - stepSize/2.;
         Double_t xPlus = x + stepSize/2.;
 
-        Double_t value = funcky->Eval( x );
-        Double_t bounds[2] = { funcky->Eval( xMinus ), funcky->Eval( xPlus )};
+        Double_t value = fSampledFuncky->Eval( x );
+        Double_t bounds[2] = { fSampledFuncky->Eval( xMinus ), fSampledFuncky->Eval( xPlus )};
         Double_t lowerBound = (bounds[0]<bounds[1])?bounds[0]:bounds[1];
         Double_t upperBound = (bounds[1]>bounds[0])?bounds[1]:bounds[0];
 
