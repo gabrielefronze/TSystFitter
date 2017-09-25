@@ -28,6 +28,8 @@ public:
 
     std::vector<TF1> fFitFunctions;
 
+    void PrintResults(TVirtualPad *pad);
+
 private:
     std::vector<std::pair<TFitResultPtr,TString>> fFitResultsVector;
     TSystFitSettings* fSystFitSettings;
