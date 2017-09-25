@@ -11,6 +11,7 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 #include "TVirtualFitter.h"
+#include "TCanvas.h"
 #include <vector>
 #include <iostream>
 
@@ -26,7 +27,7 @@ void PerformSystFit(){
 
     auto form1 = new TFormula("form1","abs(sin(x)/x)");
     auto formula = new TF1("formula","[0]*sin(x)+[1]*cos(x)+[2]*x+[3]*x*x",-10.,10.);
-    formula->SetParameters(20.,20.,0.001,0.04);
+    formula->SetParameters(20.,20.,0.05,0.04);
 
     for( int i=0; i<histo->GetNbinsX(); i++){
         auto value = formula->Eval(histo->GetBinCenter(i))*(1.+0.1*(gRandom->Uniform(-1.,1.)));
@@ -49,18 +50,18 @@ void PerformSystFit(){
 
     cout<<"Par0 initialized with "<<systFitSettings->GetParameter(0).GetNValues()<<" values"<<endl;
 
-    std::vector<ParamValue> par1Values = {ParamValue(19.,17.,21.),ParamValue(1.,-1.5,3.5),ParamValue(4.,0.,10.),ParamValue(2.,0.,20.),ParamValue(-3.,-40.,23.)};
+    std::vector<ParamValue> par1Values = {ParamValue(17.,17.,21.),ParamValue(18.,17.,21.),ParamValue(19.,17.,21.),ParamValue(20.,17.,21.),ParamValue(21.,17.,21.)};
 
     cout<<par1Values.size()<<endl;
     systFitSettings->AddParameter(TSystFitParameter(par1Values));
 
     cout<<"Par1 initialized with "<<systFitSettings->GetParameter(1).GetNValues()<<" values"<<endl;
 
-    systFitSettings->AddParameter(TSystFitParameter(TF1("gaus","gaus",-2.,2.),10));
+    systFitSettings->AddParameter(TSystFitParameter(new TF1("fa1","sin(x)/x",0,10),10));
 
     cout<<"Par2 initialized with "<<systFitSettings->GetParameter(2).GetNValues()<<" values"<<endl;
 
-    Double_t par3Values[3] = {27.,0.,50.};
+    Double_t par3Values[3] = {1.,0.,2.};
     systFitSettings->AddParameter(TSystFitParameter(par3Values));
 
     cout<<"Par3 initialized with "<<systFitSettings->GetParameter(3).GetNValues()<<" values"<<endl;
@@ -73,23 +74,7 @@ void PerformSystFit(){
 
     systFitter->SystFit(formula,"sreli","",-10.,10.);
 
-    histo->Draw();
-//    formula->Draw("SAME");
-    int iFunc =0;
-    for(auto &itFunc : systFitter->fFitFunctions){
+    auto canv = new TCanvas("canv","canv");
 
-        auto fitStatus = systFitter->GetFitResults()[iFunc++].second;
-
-        itFunc.SetLineWidth(1);
-
-        if (fitStatus.Contains("SUCC")) {
-            itFunc.SetLineColor(kGreen);
-        } else if (fitStatus.Contains("FAIL")) {
-            itFunc.SetLineColor(kRed);
-        } else if (fitStatus.Contains("CALL")) {
-                itFunc.SetLineColor(kBlue);
-        } else itFunc.SetLineColor(kOrange);
-
-        itFunc.Draw("SAME");
-    }
+    systFitter->PrintResults(canv);
 }
