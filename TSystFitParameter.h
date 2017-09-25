@@ -50,8 +50,8 @@ public:
 
     TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
     explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues.insert(fParamValues.end(), paramValues.begin(), paramValues.end()); };
-    explicit TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.push_back(ParamValue(fixedValue,fixedValue,fixedValue)); };
-    explicit TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(ParamValue(data)); };
+    explicit TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0){ fParamValues.emplace_back(fixedValue,fixedValue,fixedValue); };
+    explicit TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0){ fParamValues.emplace_back(data); };
     explicit TSystFitParameter(ParamValue paramValue) : fParamType(kStandard),fIndex(0){ fParamValues.push_back(paramValue); };
 
     inline const ULong_t GetNValues(){ return fParamValues.size(); };
