@@ -14,7 +14,7 @@ enum ParamType{
     kDistribution,
     kFix,
     kStandard,
-    kNone
+    kNoType
 };
 
 struct ParamValue{
@@ -46,7 +46,7 @@ struct ParamValue{
 class TSystFitParameter {
 public:
 
-    TSystFitParameter() : fParamType(kNone),fIndex(0){};
+    TSystFitParameter() : fParamType(kNoType),fIndex(0){};
 
     TSystFitParameter(TF1 funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
     explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0){ fParamValues.insert(fParamValues.end(), paramValues.begin(), paramValues.end()); };
