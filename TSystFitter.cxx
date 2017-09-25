@@ -3,6 +3,7 @@
 //
 
 #include <TMinuit.h>
+#include <TPad.h>
 #include "TFitResultPtr.h"
 #include "TFitResult.h"
 #include "TSystFitter.h"
@@ -55,9 +56,57 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
     auto nParams = fSystFitSettings->GetNParams();
 
     pad->Divide(2,1);
-    auto dataFitPad = pad->cd(1);
+    auto dataPad = pad->cd(1);
+    auto dataFitPad = new TPad("dataFit","dataFit",0.,0.3,1.,1.);
+    auto fitResultsPad = new TPad("fitRes","fitRes",0.,0.,1.,0.3);
+    dataPad->cd();
+    dataFitPad->Draw();
+    fitResultsPad->Draw();
 
+    dataFitPad->cd();
+    fHistToFit->SetTitle("Data and fit functions");
+    fHistToFit->SetStats(kFALSE);
     fHistToFit->Draw();
+
+    char *labels[5] = {"Success","Fail","Call limit","Problems","Other"};
+
+    auto histoFitResult = new TH1I("fitRes","Fit results statistics",5,-0.5,4.5);
+    histoFitResult->GetYaxis()->SetRangeUser(0.,fFitFunctions.size());
+    histoFitResult->SetStats(kFALSE);
+    for (int iLabel = 0; iLabel < 5; ++iLabel) {
+        histoFitResult->GetXaxis()->SetBinLabel(iLabel+1,labels[iLabel]);
+    }
+
+    auto histoFitResultS = new TH1I("fitResS","fitResS",5,-0.5,4.5);
+    histoFitResultS->SetLineColor(kGreen);
+    histoFitResultS->SetFillColor(kGreen);
+    histoFitResultS->SetFillStyle(3003);
+    histoFitResultS->SetStats(kFALSE);
+
+    auto histoFitResultF = new TH1I("fitResF","fitResF",5,-0.5,4.5);
+    histoFitResultF->SetLineColor(kRed);
+    histoFitResultF->SetFillColor(kRed);
+    histoFitResultF->SetFillStyle(3003);
+    histoFitResultF->SetStats(kFALSE);
+
+    auto histoFitResultC = new TH1I("fitResC","fitResC",5,-0.5,4.5);
+    histoFitResultC->SetLineColor(kBlue);
+    histoFitResultC->SetFillColor(kBlue);
+    histoFitResultC->SetFillStyle(3003);
+    histoFitResultC->SetStats(kFALSE);
+
+    auto histoFitResultP = new TH1I("fitResP","fitResP",5,-0.5,4.5);
+    histoFitResultP->SetLineColor(kViolet);
+    histoFitResultP->SetFillColor(kViolet);
+    histoFitResultP->SetFillStyle(3003);
+    histoFitResultP->SetStats(kFALSE);
+
+    auto histoFitResultO = new TH1I("fitResO","fitResO",5,-0.5,4.5);
+    histoFitResultO->SetLineColor(kOrange);
+    histoFitResultO->SetFillColor(kOrange);
+    histoFitResultO->SetFillStyle(3003);
+    histoFitResultO->SetStats(kFALSE);
+
     int iFunc =0;
     for(auto &itFunc : fFitFunctions){
 
@@ -67,29 +116,47 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
 
         if (fitStatus.Contains("SUCC")) {
             itFunc.SetLineColor(kGreen);
+            histoFitResultS->Fill(0.);
         } else if (fitStatus.Contains("FAIL")) {
             itFunc.SetLineColor(kRed);
+            histoFitResultF->Fill(1.);
         } else if (fitStatus.Contains("CALL")) {
-                itFunc.SetLineColor(kBlue);
-        } else itFunc.SetLineColor(kOrange);
+            itFunc.SetLineColor(kBlue);
+            histoFitResultC->Fill(2.);
+        } else if ( fitStatus.Contains("PROB")){
+            itFunc.SetLineColor(kViolet);
+            histoFitResultP->Fill(3.);
+        } else {
+            itFunc.SetLineColor(kOrange);
+            histoFitResultO->Fill(4.);
+        }
 
         dataFitPad->cd();
         itFunc.Draw("SAME");
     }
 
+    fitResultsPad->cd();
+    histoFitResult->Draw();
+    histoFitResultS->Draw("SAME");
+    histoFitResultF->Draw("SAME");
+    histoFitResultC->Draw("SAME");
+    histoFitResultP->Draw("SAME");
+    histoFitResultO->Draw("SAME");
+    fitResultsPad->RedrawAxis();
+
     auto parStatsPad = pad->cd(2);
-    parStatsPad->Divide(2,(Int_t)nParams/2+1);
+    parStatsPad->Divide(2,(Int_t)nParams/2);
 
     std::vector<Double_t> parData[nParams];
 
     for ( const auto &itFitResult : fFitResultsVector ){
         for (int iPar = 0; iPar < nParams; ++iPar) {
             parData[iPar].emplace_back(itFitResult.first.Get()->Parameter(iPar));
-            std::cout << parData[iPar].back() << std::endl;
         }
     }
 
     std::vector<TH1D*> histVect;
+    char *paramTypesExtended[5] = {"List","Distribution","Fixed","Single free value","No type"};
 
     for (int iPar = 0; iPar < nParams; ++iPar) {
         parStatsPad->cd(iPar+1);
@@ -97,7 +164,9 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
         auto maxX = *std::min_element(parData[iPar].begin(),parData[iPar].end());
         auto deltaX = maxX - minX;
         auto offsetX = deltaX * 0.1;
-        auto histBuffer = new TH1D(Form("hPar%d",iPar),Form("%s",fFitResultsVector[0].first.Get()->ParName(iPar).c_str()),10000,minX-offsetX,maxX+offsetX);
+        auto paramType = fSystFitSettings->GetParameter(iPar).GetType();
+        std::cout<<iPar<<" "<<paramType<<std::endl;
+        auto histBuffer = new TH1D(Form("hPar%d",iPar),Form("%s - %s",fFitResultsVector[0].first.Get()->ParName(iPar).c_str(),paramTypesExtended[paramType]),parData[iPar].size()/2,minX-offsetX,maxX+offsetX);
         histVect.emplace_back(histBuffer);
         for ( auto const &itValue : parData[iPar] ){
             histBuffer->Fill(itValue);
