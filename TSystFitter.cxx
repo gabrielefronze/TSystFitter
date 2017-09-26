@@ -11,6 +11,9 @@
 
 void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax) {
 
+    TString opt = option;
+    if ( !opt.Contains("s") ) opt.Append("s");
+
     if ( (ULong_t)(f1->GetNpar()) != fSystFitSettings->GetNParams() ){
         std::cout<<"ERROR: Wrong number of parameters. Aborting.";
         return;
