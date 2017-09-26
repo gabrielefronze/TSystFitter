@@ -114,7 +114,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
 
         itFunc.SetLineWidth(1);
 
-        if (fitStatus.Contains("SUCC")) {
+        if (fitStatus.Contains("SUCC") || fitStatus.Contains("CONV")) {
             itFunc.SetLineColor(kGreen);
             histoFitResultS->Fill(0.);
         } else if (fitStatus.Contains("FAIL")) {
@@ -150,8 +150,11 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
     std::vector<Double_t> parData[nParams];
 
     for ( const auto &itFitResult : fFitResultsVector ){
-        for (int iPar = 0; iPar < nParams; ++iPar) {
-            parData[iPar].emplace_back(itFitResult.first.Get()->Parameter(iPar));
+        auto fitStatus = itFitResult.second;
+        if (fitStatus.Contains("SUCC") || fitStatus.Contains("CONV")){
+            for (int iPar = 0; iPar < nParams; ++iPar) {
+                parData[iPar].emplace_back(itFitResult.first.Get()->Parameter(iPar));
+            }
         }
     }
 
