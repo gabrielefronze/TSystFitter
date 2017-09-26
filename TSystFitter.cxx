@@ -169,7 +169,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
         auto offsetX = deltaX * 0.1;
         auto paramType = fSystFitSettings->GetParameter(iPar).GetType();
         std::cout<<iPar<<" "<<paramType<<std::endl;
-        auto histBuffer = new TH1D(Form("hPar%d",iPar),Form("%s - %s",fFitResultsVector[0].first.Get()->ParName(iPar).c_str(),paramTypesExtended[paramType]),parData[iPar].size()/2,minX-offsetX,maxX+offsetX);
+        auto histBuffer = new TH1D(Form("hPar%d",iPar),Form("%s - %s",fFitResultsVector[0].first.Get()->ParName(iPar).c_str(),paramTypesExtended[paramType]),parData[iPar].size(),minX-offsetX,maxX+offsetX);
         histVect.emplace_back(histBuffer);
         for ( auto const &itValue : parData[iPar] ){
             histBuffer->Fill(itValue);
