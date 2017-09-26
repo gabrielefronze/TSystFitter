@@ -2,6 +2,7 @@
 // Created by Gabriele Gaetano Fronzé on 25/06/2017.
 //
 
+#include <TRandom.h>
 #include "TSystFitParameter.h"
 #include "TH1D.h"
 
@@ -19,20 +20,11 @@ TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples, Bool_t adaptiv
 
     printf("Sampled values:\n");
 
-    for (int iStep = 0; iStep < nSamples; ++iStep) {
+    for (int iSample = 0; iSample < nSamples; ++iSample) {
+        auto value = fSampledFuncky->GetRandom(xMin,xMax);
 
-        Double_t x = xMin + iStep*stepSize;
-        Double_t xMinus = x - stepSize/2.;
-        Double_t xPlus = x + stepSize/2.;
-
-        Double_t value = fSampledFuncky->Eval( x );
-        Double_t bounds[2] = { fSampledFuncky->Eval( xMinus ), fSampledFuncky->Eval( xPlus )};
-        Double_t lowerBound = (bounds[0]<bounds[1])?bounds[0]:bounds[1];
-        Double_t upperBound = (bounds[1]>bounds[0])?bounds[1]:bounds[0];
-
-        printf("\t%f<%f<%F\n",lowerBound,value,upperBound);
-
-        localParamValues.emplace_back(value,lowerBound,upperBound);
+        localParamValues.emplace_back(value,xMin,xMax);
+        printf("%f\n",value);
     }
 
     fParamValues = std::move(localParamValues);
