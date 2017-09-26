@@ -174,7 +174,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
         for ( auto const &itValue : parData[iPar] ){
             histBuffer->Fill(itValue);
         }
-        histVect[iPar]->Draw();
+        histVect[iPar]->DrawNormalized();
     }
 
 
