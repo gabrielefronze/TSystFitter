@@ -4,6 +4,7 @@
 
 #include <TMinuit.h>
 #include <TPad.h>
+#include <TMath.h>
 #include "TFitResultPtr.h"
 #include "TFitResult.h"
 #include "TSystFitter.h"
@@ -162,39 +163,51 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
 
     std::vector<TH1D*> histVectData;
     std::vector<TH1D*> histVectErr;
-    TString paramTypesExtended[5] = {"List","Distribution","Fixed","Single free value","No type"};
+    TString paramTypesExtended[5] = {"List of values","Distribution","Fixed value","Single free value","No type"};
 
     for (int iPar = 0; iPar < nParams; ++iPar) {
+        TString parName = fFitResultsVector[0].first.Get()->ParName(iPar).c_str();
+        auto paramType = paramTypesExtended[fSystFitSettings->GetParameter(iPar).GetType()];
+
         parStatsPad->cd(iPar*2+1);
         auto minX = *std::min_element(parData[iPar].begin(),parData[iPar].end());
         auto maxX = *std::min_element(parData[iPar].begin(),parData[iPar].end());
         auto deltaX = maxX - minX;
         auto offsetX = deltaX * 0.1;
-        auto paramType = fSystFitSettings->GetParameter(iPar).GetType();
-        std::cout<<iPar<<" "<<paramType<<std::endl;
-        auto histBuffer = new TH1D(Form("hPar%d",iPar),Form("%s values - %s",fFitResultsVector[0].first.Get()->ParName(iPar).c_str(),paramTypesExtended[paramType].Data()),parData[iPar].size(),minX-offsetX,maxX+offsetX);
+        auto histBuffer = new TH1D(Form("hPar%dData",iPar),Form("%s values - %s",parName.Data(),paramType.Data()),parData[iPar].size(),minX-offsetX,maxX+offsetX);
         histVectData.emplace_back(histBuffer);
         for ( auto const &itValue : parData[iPar] ){
             histBuffer->Fill(itValue);
         }
         histVectData[iPar]->DrawNormalized();
-    }
 
-    for (int iPar = 0; iPar < nParams; ++iPar) {
+        auto meanParValue = histVectData[iPar]->GetMean();
+        auto sigmaTot = histVectData[iPar]->GetRMS();
+
         parStatsPad->cd(iPar*2+2);
-        auto minX = *std::min_element(parErr[iPar].begin(),parErr[iPar].end());
-        auto maxX = *std::min_element(parErr[iPar].begin(),parErr[iPar].end());
-        auto deltaX = maxX - minX;
-        auto offsetX = deltaX * 0.1;
-        auto paramType = fSystFitSettings->GetParameter(iPar).GetType();
-        std::cout<<iPar<<" "<<paramType<<std::endl;
-        auto histBuffer = new TH1D(Form("hPar%d",iPar),Form("%s stat. error - %s",fFitResultsVector[0].first.Get()->ParName(iPar).c_str(),paramTypesExtended[paramType].Data()),parErr[iPar].size(),minX-offsetX,maxX+offsetX);
+        minX = *std::min_element(parErr[iPar].begin(),parErr[iPar].end());
+        maxX = *std::min_element(parErr[iPar].begin(),parErr[iPar].end());
+        deltaX = maxX - minX;
+        offsetX = deltaX * 0.1;
+        histBuffer = new TH1D(Form("hPar%dErr",iPar),Form("%s stat. error - %s",parName.Data(),paramType.Data()),parErr[iPar].size(),minX-offsetX,maxX+offsetX);
         histVectErr.emplace_back(histBuffer);
         for ( auto const &itValue : parErr[iPar] ){
             histBuffer->Fill(itValue);
         }
         histVectErr[iPar]->SetLineColor(kRed);
         histVectErr[iPar]->DrawNormalized();
+
+        auto sigmaStat = histVectErr[iPar]->GetMean();
+        auto sigmaSyst = TMath::Abs(sigmaTot)*TMath::Abs(sigmaStat)/TMath::Sqrt(TMath::Power(sigmaStat,2.)-TMath::Power(sigmaTot,2.));
+
+        printf("###################################\n"
+                       "Parameter %d:\n"
+                       "\tType: %s\n"
+                       "\tName: %s\n"
+                       "\tValue: %f\n"
+                       "\tStat. unc.: %f (%f%%)\n"
+                       "\tSyst. unc.: %f (%f%%)\n",
+                        iPar,paramType.Data(),parName.Data(),meanParValue,sigmaStat,sigmaStat/meanParValue*100,sigmaSyst,sigmaSyst/meanParValue*100);
     }
 
 
