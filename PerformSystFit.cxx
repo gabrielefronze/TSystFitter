@@ -19,14 +19,14 @@ using namespace std;
 
 void PerformSystFit(){
 
-    TVirtualFitter::SetMaxIterations( 2000 );
+    TVirtualFitter::SetMaxIterations( 20000 );
 
     auto *histo = new TH1D("histo","histo",100,-10.,10.);
 
     cout<<"Histo initialized"<<endl;
 
     auto form1 = new TFormula("form1","abs(sin(x)/x)");
-    auto formula = new TF1("formula","[0]*sin(x)+[1]*cos(x)+[2]*x+[3]*x*x",-10.,10.);
+    auto formula = new TF1("formula","[0]*sin(x)+[1]*cos(2*x)+[2]*x+[3]*x*x",-10.,10.);
     formula->SetParameters(20.,20.,0.05,0.04);
 
     for( int i=0; i<histo->GetNbinsX(); i++){
@@ -46,7 +46,7 @@ void PerformSystFit(){
 
 
 
-    systFitSettings->AddParameter(TSystFitParameter(ParamValue(20.,20.,20.)));
+    systFitSettings->AddParameter(TSystFitParameter(ParamValue(20.)));
 
     cout<<"Par0 initialized with "<<systFitSettings->GetParameter(0).GetNValues()<<" values"<<endl;
 
@@ -57,7 +57,7 @@ void PerformSystFit(){
 
     cout<<"Par1 initialized with "<<systFitSettings->GetParameter(1).GetNValues()<<" values"<<endl;
 
-    systFitSettings->AddParameter(TSystFitParameter(new TF1("fa1","sin(x)/x",0,10),10));
+    systFitSettings->AddParameter(TSystFitParameter(new TF1("fa1","sin(x)/x",0.,50.),50));
 
     cout<<"Par2 initialized with "<<systFitSettings->GetParameter(2).GetNValues()<<" values"<<endl;
 
@@ -68,6 +68,8 @@ void PerformSystFit(){
 
     cout<<"A total of "<<systFitSettings->GetNConfigurations()<<" configurations will be tested"<<endl;
     systFitSettings->GenerateConfigurations();
+
+//    return;
 
     auto *systFitter = new TSystFitter(histo);
     systFitter->SetSystFitSettings(systFitSettings);
