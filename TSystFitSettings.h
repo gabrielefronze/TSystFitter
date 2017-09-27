@@ -7,14 +7,15 @@
 
 #include "Rtypes.h"
 #include "TSystFitParameter.h"
+#include "TF1.h"
 #include <utility>
 #include <vector>
 
 class TSystFitSettings {
 public:
     explicit TSystFitSettings(Int_t fNParams = 0);
-
     explicit TSystFitSettings(std::vector<TSystFitParameter> params) : fParams(std::move(params)){};
+    explicit TSystFitSettings(TF1 funcky, std::vector<int> nSamples);
 
     void GenerateConfigurations();
 

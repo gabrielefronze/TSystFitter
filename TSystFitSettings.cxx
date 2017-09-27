@@ -5,11 +5,36 @@
 #include <utility>
 
 #include "TSystFitSettings.h"
-#include "TSystFitParameter.h"
 
 TSystFitSettings::TSystFitSettings(Int_t nParams){
-    fParams.reserve((unsigned long long)nParams);
+    fParams.resize((unsigned long long)nParams);
 }
+
+TSystFitSettings::TSystFitSettings(TF1 funcky, std::vector<int> nSamples){
+
+    if ( nSamples.size() != funcky.GetNpar() ){
+        std::cout<<"Sei un pollo! Precisare nSamples per "<<funcky.GetNpar()<<" parametri!"<<std::endl;
+        return;
+    }
+
+    fParams.resize(funcky.GetNpar());
+
+    for(Int_t iPar = 0; iPar < funcky.GetNpar(); iPar++){
+        auto value = funcky.GetParameter(iPar);
+        auto error = funcky.GetParError(iPar);
+        auto minValue = value - error;
+        auto maxValue = value + error;
+        auto nSamplesLocal = nSamples[iPar];
+        std::cout<<"required samples "<<nSamplesLocal<<std::endl;
+        if ( nSamplesLocal==0 ){
+            std::cout<<"Fixed "<<iPar<<" as "<<value<<std::endl;
+            this->SetParameter(iPar,TSystFitParameter(ParamValue(value,value,value),1));
+        } else {
+            this->SetParameter(iPar,TSystFitParameter(ParamValue(value,minValue,maxValue),nSamplesLocal));
+            std::cout<<"Parameter "<<iPar<<" set as {"<<value<<","<<minValue<<","<<maxValue<<"}"<<std::endl;
+        }
+    }
+};
 
 void TSystFitSettings::GenerateConfigurations(){
     const unsigned long nPar = fParams.size();
@@ -68,11 +93,11 @@ void TSystFitSettings::GenerateConfigurations(){
 }
 
 Bool_t TSystFitSettings::SetParameter(ULong_t iParam, TSystFitParameter param){
-    if ( iParam > fParams.size() ) return kFALSE;
-    else{
-        fParams[iParam] = std::move(param);
-        return kTRUE;
-    }
+
+    if ( iParam > fParams.size() ) fParams.resize(iParam);
+
+    fParams[iParam] = std::move(param);
+    return kTRUE;
 }
 
 std::vector<ParamValue> TSystFitSettings::GetConfiguration(unsigned long iConfig){
