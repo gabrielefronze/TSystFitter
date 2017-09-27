@@ -6,26 +6,61 @@
 #include "TSystFitParameter.h"
 #include "TH1D.h"
 
-//TODO: make the method adaptive. It will scan the input distribution to adapt the x values to its derivative.
-//TODO: this will grant to keep track of fast oscillations
-TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples, Bool_t adaptive)  : fParamType(kDistribution),fIndex(0) {
+TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples)  : fParamType(kDistribution) {
     std::vector<ParamValue> localParamValues;
 
     Double_t xMin, xMax;
     xMin = xMax = 0.;
-    fSampledFuncky = new TF1(*funcky);
-    fSampledFuncky->GetRange(xMin, xMax);
+    this->fSampledFuncky = new TF1(*funcky);
+    this->fSampledFuncky->GetRange(xMin, xMax);
+
+    std::cout<<"Range is "<<xMin<<" "<<xMax<<std::endl;
 
     Double_t stepSize = (xMax - xMin)/nSamples;
 
     printf("Sampled values:\n");
 
     for (int iSample = 0; iSample < nSamples; ++iSample) {
-        auto value = fSampledFuncky->GetRandom(xMin,xMax);
+        auto value = this->fSampledFuncky->GetRandom(xMin,xMax);
 
         localParamValues.emplace_back(value,xMin,xMax);
         printf("%f\n",value);
     }
 
-    fParamValues = std::move(localParamValues);
+    this->fParamValues = std::move(localParamValues);
+}
+
+TSystFitParameter::TSystFitParameter(ParamValue paramValue, Int_t nSamples) : fParamType(kStandard),fSampledFuncky(0x0) {
+
+    if (paramValue.fLowerLimit==paramValue.fUpperLimit) {
+        fParamType = kFix;
+        fSampledFuncky = 0x0;
+        fParamValues.emplace_back(paramValue);
+    }
+    else {
+        Double_t xMin = (paramValue.fLowerLimit<paramValue.fUpperLimit)?paramValue.fLowerLimit:paramValue.fUpperLimit;
+        Double_t xMax = (paramValue.fLowerLimit>paramValue.fUpperLimit)?paramValue.fLowerLimit:paramValue.fUpperLimit;
+
+        fParamType = kStandard;
+
+        std::vector<ParamValue> localParamValues;
+
+        fSampledFuncky = new TF1("unidist","1.",xMin,xMax);
+        fSampledFuncky->GetRange(xMin, xMax);
+
+        std::cout<<"Range is "<<xMin<<" "<<xMax<<std::endl;
+
+        Double_t stepSize = (xMax - xMin)/nSamples;
+
+        printf("Sampled values:\n");
+
+        for (int iSample = 0; iSample < nSamples; ++iSample) {
+            auto value = fSampledFuncky->GetRandom(xMin,xMax);
+
+            localParamValues.emplace_back(value,xMin,xMax);
+            printf("%f\n",value);
+        }
+
+        fParamValues = std::move(localParamValues);
+    }
 }

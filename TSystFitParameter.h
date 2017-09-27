@@ -21,17 +21,18 @@ struct ParamValue{
     Double_t fValue;
     Double_t fUpperLimit;
     Double_t fLowerLimit;
+
     ParamValue(){
         fValue = 0.;
         fUpperLimit = 0.;
         fLowerLimit = 0.;
     }
-    ParamValue(Double_t value){
+    explicit ParamValue(Double_t value){
         fValue = value;
         fUpperLimit = value;
         fLowerLimit = value;
     }
-    ParamValue(Double_t value, Double_t lowerLimit, Double_t upperLimit){
+    explicit ParamValue(Double_t value, Double_t lowerLimit, Double_t upperLimit){
         fValue = value;
         fUpperLimit = upperLimit;
         fLowerLimit = lowerLimit;
@@ -46,24 +47,19 @@ struct ParamValue{
 class TSystFitParameter {
 public:
 
-    TSystFitParameter() : fParamType(kNoType),fIndex(0){};
+    TSystFitParameter() : fParamType(kNoType){};
 
-    TSystFitParameter(TF1 *funcky, Int_t nSamples, Bool_t adaptive = kFALSE);
-    explicit TSystFitParameter(std::vector<ParamValue> paramValues) : fParamType(kListOfValues),fIndex(0),fSampledFuncky(0x0){ fParamValues.insert(fParamValues.end(), paramValues.begin(), paramValues.end()); };
-    explicit TSystFitParameter(Double_t fixedValue) : fParamType(kFix),fIndex(0),fSampledFuncky(0x0){ fParamValues.emplace_back(fixedValue,fixedValue,fixedValue); };
-    explicit TSystFitParameter(Double_t data[3]) : fParamType(kStandard),fIndex(0),fSampledFuncky(0x0){ fParamValues.emplace_back(data); };
-    explicit TSystFitParameter(ParamValue paramValue) : fIndex(0),fSampledFuncky(0x0){ fParamValues.push_back(paramValue); (paramValue.fValue==paramValue.fUpperLimit && paramValue.fValue==paramValue.fLowerLimit)?fParamType=kFix:fParamType=kStandard; };
+    explicit TSystFitParameter(TF1 *funcky, Int_t nSamples);
+    explicit TSystFitParameter(ParamValue paramValue, Int_t nSamples);
 
     inline const ULong_t GetNValues(){ return fParamValues.size(); };
     inline const ParamType GetType(){ return fParamType; };
     inline const ParamValue GetValue(UInt_t index=0){ return (index<fParamValues.size()) ? fParamValues[index] : ParamValue(0.,0.,0.); };
-    inline const ParamValue GetNextValue(){ return (fIndex+1<fParamValues.size()) ? fParamValues[fIndex++] : ParamValue(0.,0.,0.); };
 
     inline TF1* GetFuncky(){ return new TF1(*fSampledFuncky); };
 
 private:
     std::vector<ParamValue> fParamValues;
-    UInt_t fIndex;
     ParamType fParamType;
     TF1 *fSampledFuncky;
 };
