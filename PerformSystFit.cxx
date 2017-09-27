@@ -69,7 +69,7 @@ void PerformSystFit(){
     auto *systFitter = new TSystFitter(histo);
     systFitter->SetSystFitSettings(systFitSettings);
 
-    systFitter->SystFit(formula,"sreli","",-10.,10.);
+    systFitter->SystFit(formula,"srliq","",-10.,10.);
 
     auto canv = new TCanvas("canv","canv");
 
