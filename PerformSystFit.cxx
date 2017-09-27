@@ -44,25 +44,20 @@ void PerformSystFit(){
 
     cout<<"Settings initialized"<<endl;
 
-
-
-    systFitSettings->AddParameter(TSystFitParameter(ParamValue(20.)));
+    systFitSettings->AddParameter(TSystFitParameter(ParamValue(20.,20.,20.),1));
 
     cout<<"Par0 initialized with "<<systFitSettings->GetParameter(0).GetNValues()<<" values"<<endl;
 
-    std::vector<ParamValue> par1Values = {ParamValue(17.,17.,21.),ParamValue(18.,17.,21.),ParamValue(19.,17.,21.),ParamValue(20.,17.,21.),ParamValue(21.,17.,21.)};
-
-    cout<<par1Values.size()<<endl;
-    systFitSettings->AddParameter(TSystFitParameter(par1Values));
+    systFitSettings->AddParameter(TSystFitParameter(ParamValue(17.,5.,25.),5));
 
     cout<<"Par1 initialized with "<<systFitSettings->GetParameter(1).GetNValues()<<" values"<<endl;
 
-    systFitSettings->AddParameter(TSystFitParameter(new TF1("fa1","sin(x)/x",0.,50.),50));
+    systFitSettings->AddParameter(TSystFitParameter(new TF1("fa1","sin(x)/x",0.,50.),5));
 
     cout<<"Par2 initialized with "<<systFitSettings->GetParameter(2).GetNValues()<<" values"<<endl;
 
     Double_t par3Values[3] = {1.,0.,2.};
-    systFitSettings->AddParameter(TSystFitParameter(par3Values));
+    systFitSettings->AddParameter(TSystFitParameter(ParamValue(par3Values),5));
 
     cout<<"Par3 initialized with "<<systFitSettings->GetParameter(3).GetNValues()<<" values"<<endl;
 
