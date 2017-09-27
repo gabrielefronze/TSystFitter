@@ -6,7 +6,7 @@
 #include "TSystFitParameter.h"
 #include "TH1D.h"
 
-TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples)  : fParamType(kDistribution) {
+TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples)  : fParamType(kCustom) {
     std::vector<ParamValue> localParamValues;
 
     Double_t xMin, xMax;
@@ -30,18 +30,18 @@ TSystFitParameter::TSystFitParameter(TF1 *funcky, Int_t nSamples)  : fParamType(
     this->fParamValues = std::move(localParamValues);
 }
 
-TSystFitParameter::TSystFitParameter(ParamValue paramValue, Int_t nSamples) : fParamType(kStandard),fSampledFuncky(0x0) {
+TSystFitParameter::TSystFitParameter(ParamValue paramValue, Int_t nSamples) : fParamType(kUniform),fSampledFuncky(nullptr) {
 
     if (paramValue.fLowerLimit==paramValue.fUpperLimit) {
         fParamType = kFix;
-        fSampledFuncky = 0x0;
+        fSampledFuncky = nullptr;
         fParamValues.emplace_back(paramValue);
     }
     else {
         Double_t xMin = (paramValue.fLowerLimit<paramValue.fUpperLimit)?paramValue.fLowerLimit:paramValue.fUpperLimit;
         Double_t xMax = (paramValue.fLowerLimit>paramValue.fUpperLimit)?paramValue.fLowerLimit:paramValue.fUpperLimit;
 
-        fParamType = kStandard;
+        fParamType = kUniform;
 
         std::vector<ParamValue> localParamValues;
 

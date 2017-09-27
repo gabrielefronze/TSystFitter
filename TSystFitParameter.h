@@ -10,10 +10,9 @@
 #include <vector>
 
 enum ParamType{
-    kListOfValues,
-    kDistribution,
+    kCustom,
     kFix,
-    kStandard,
+    kUniform,
     kNoType
 };
 
