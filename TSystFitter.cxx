@@ -168,7 +168,12 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
 
     std::vector<TH1D*> histVectData;
     std::vector<TH1D*> histVectErr;
-    TString paramTypesExtended[5] = {"List of values","Distribution","Fixed value","Single free value","No type"};
+    TString paramTypesExtended[4];
+
+    paramTypesExtended[kCustom] = "From custom distribution";
+    paramTypesExtended[kFix] = "Fixed value";
+    paramTypesExtended[kUniform] = "From uniform distribution";
+    paramTypesExtended[kNoType] = "No type";
 
     for (int iPar = 0; iPar < nParams; ++iPar) {
         TString parName = fFitResultsVector[0].first.Get()->ParName(iPar).c_str();
