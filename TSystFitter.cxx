@@ -48,12 +48,12 @@ void TSystFitter::SetConfiguration(TF1 *f1, unsigned long iConfig){
     int iPar=0;
     auto config = fSystFitSettings->GetConfiguration(iConfig);
 
-    std::cout<<"Config entries "<<config.size()<<std::endl;
+//    std::cout<<"Config entries "<<config.size()<<std::endl;
 
     for(const auto &itPar : config){
         f1->SetParameter(iPar,itPar.fValue);
         f1->SetParLimits(iPar,itPar.fLowerLimit,itPar.fUpperLimit);
-        printf("Par %d set as: %f..%f..%f\n",iPar,itPar.fLowerLimit,itPar.fValue,itPar.fUpperLimit);
+//        printf("Par %d set as: %f..%f..%f\n",iPar,itPar.fLowerLimit,itPar.fValue,itPar.fUpperLimit);
         iPar++;
     }
 }
