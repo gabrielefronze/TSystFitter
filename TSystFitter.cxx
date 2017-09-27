@@ -26,7 +26,9 @@ void TSystFitter::SystFit(TF1 *f1, Option_t *option, Option_t *goption, Double_t
         SetConfiguration(f1, iConfig);
         fFitResultsVector.emplace_back(fHistToFit->Fit(f1,option,goption,xmin,xmax),gMinuit->fCstatu.Data());
         fFitFunctions.emplace_back(*f1);
+        std::cout<<iConfig+1<<"/"<<nConfig<<"\r"<<std::flush;
     }
+    std::cout<<std::endl;
 }
 
 void TSystFitter::SystFit(const char *formula, Option_t *option, Option_t *goption, Double_t xmin, Double_t xmax){
