@@ -216,7 +216,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
                        "\tName: %s\n"
                        "\tValue: %f\n",
                         iPar,paramType.Data(),parName.Data(),meanParValue);
-        if ( paramType != kFix ){
+        if ( !paramType.Contains("Fixed") ){
             printf(     "\tStat. unc.: %f (%f%%)\n"
                                 "\tSyst. unc.: %f (%f%%)\n",
                         sigmaStat,sigmaStat/meanParValue*100,sigmaSyst,sigmaSyst/meanParValue*100);
