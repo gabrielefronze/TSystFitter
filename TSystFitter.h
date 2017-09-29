@@ -39,8 +39,4 @@ private:
 
 };
 
-//TODO: maybe the fitting function should be placed inside TSystFitSettings
-//TODO: several TSystFitSettings will contain different functions
-//TODO: the extrapolation at a certain value will be given with stat and syst error taking into account all fit results
-
 #endif //TSYSTFITTER_H

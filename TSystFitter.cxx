@@ -113,6 +113,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
     histoFitResultO->SetFillStyle(3003);
     histoFitResultO->SetStats(kFALSE);
 
+    std::cout<<"Printing functions...\n";
     int iFunc =0;
     for(auto &itFunc : fFitFunctions){
 
@@ -139,6 +140,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
 
         dataFitPad->cd();
         itFunc.Draw("SAME");
+        std::cout<<iFunc+1<<"/"<<fFitFunctions.size()<<"\r"<<std::flush;
     }
 
     fitResultsPad->cd();
