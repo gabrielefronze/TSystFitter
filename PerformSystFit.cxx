@@ -42,39 +42,16 @@ void PerformSystFit(){
     formulaFit->SetParameters(20.,20.,0.5,0.4);
     histo->Fit(formulaFit,"rlie");
 
-//    auto *systFitSettings = new TSystFitSettings(4);
-
-    std::vector<int> nSamples = {0,3,3,3};
+    std::vector<int> nSamples = {0,5,5,5};
     auto *systFitSettings = new TSystFitSettings(*formulaFit,nSamples);
-
-//    cout<<"Settings initialized"<<endl;
-//
-//    systFitSettings->AddParameter(TSystFitParameter(ParamValue(20.,10.,30.),1));
-//
-//    cout<<"Par0 initialized with "<<systFitSettings->GetParameter(0).GetNValues()<<" values"<<endl;
-//
-//    systFitSettings->AddParameter(TSystFitParameter(ParamValue(17.,5.,25.),5));
-//
-//    cout<<"Par1 initialized with "<<systFitSettings->GetParameter(1).GetNValues()<<" values"<<endl;
-//
-//    systFitSettings->AddParameter(TSystFitParameter(new TF1("fa1","sin(x)/x",0.,50.),5));
-//
-//    cout<<"Par2 initialized with "<<systFitSettings->GetParameter(2).GetNValues()<<" values"<<endl;
-//
-//    Double_t par3Values[3] = {1.,0.,2.};
-//    systFitSettings->AddParameter(TSystFitParameter(ParamValue(par3Values),5));
-//
-//    cout<<"Par3 initialized with "<<systFitSettings->GetParameter(3).GetNValues()<<" values"<<endl;
 
     cout<<"A total of "<<systFitSettings->GetNConfigurations()<<" configurations will be tested"<<endl;
     systFitSettings->GenerateConfigurations();
 
-//    return;
-
     auto *systFitter = new TSystFitter(histo);
     systFitter->SetSystFitSettings(systFitSettings);
 
-    systFitter->SystFit(formula,"srliq","",-10.,10.);
+    systFitter->SystFit(formula,"sreliq","",-10.,10.);
 
     auto canv = new TCanvas("canv","canv");
 

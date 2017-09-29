@@ -5,6 +5,7 @@
 #include <TRandom.h>
 #include "TROOT.h"
 #include "TH1D.h"
+#include "TFile.h"
 #include "TSystFitParameter.h"
 #include "TSystFitSettings.h"
 #include "TSystFitter.h"
@@ -17,35 +18,60 @@
 
 using namespace std;
 
-void PerformSystFit(){
+void PerformRealSystFit(){
 
     TVirtualFitter::SetMaxIterations( 20000 );
 
-    auto *histo = new TH1D("histo","histo",100,-10.,10.);
+    auto canv = new TCanvas("canv","canv");
 
-    cout<<"Histo initialized"<<endl;
+    // Read the raw data from the file .root and plot the histogram
+    TFile *f = new TFile("dati.root");
+    f->ls();
+    TCanvas *c = new TCanvas("c", "Signal charge", 800, 600);
+    TH1F *histo = (TH1F*)f->Get("h");
+    histo->Draw();
+    histo->GetXaxis()->SetTitle("charge [pC/4]");
+    histo->GetYaxis()->SetTitle("counts");
+    histo->GetYaxis()->SetRangeUser(0, 120);
+    histo->GetXaxis()->SetRangeUser(-50, 370);
 
-    auto form1 = new TFormula("form1","abs(sin(x)/x)");
-    auto formula = new TF1("formula","[0]*sin(x)+[1]*cos(1.5*x)+[2]*x+[3]*x*x",-10.,10.);
-    auto formulaFit = new TF1(*formula);
-    formula->SetParameters(20.,20.,0.5,0.4);
+    // Gaussian function for baseline
+    TF1 *f1 = new TF1("f1","[0]*Gaus(x, [1], [2])", -10, 15);
+    f1->SetParameter(0, 70);
+    f1->SetParameter(1, 0);
+    f1->SetParameter(2, 3);
+    histo->Fit("f1", "r");
 
-    for( int i=0; i<histo->GetNbinsX(); i++){
-        auto value = formula->Eval(histo->GetBinCenter(i))*(1.+0.1*(gRandom->Uniform(-1.,1.)));
-        histo->SetBinContent(i,value);
-    }
+    // Gaussian function for avalanche peak
+    TF1 *f2 = new TF1("f2","[0]*Landau(x, [1], [2])", 20, 80);
+    f2->SetParameter(0, 533);
+    f2->SetParameter(1, 25);
+    f2->SetParameter(2, 5.2);
+    histo->Fit("f2", "r");
 
-    histo->Sumw2();
+    // Gaussian function for streamer peak
+    TF1 *f3 = new TF1("f3","[0]*Gaus(x, [1], [2])", 150, 350);
+    f3->SetParameter(0, 10);
+    f3->SetParameter(1, 250);
+    f3->SetParameter(2, 25);
+    histo->Fit("f3", "r");
 
-    cout<<"Formula initialized"<<endl;
+    // Global function: that's the sum of the previous functions
+    TF1 *f4 = new TF1("f4","[0]*Gaus(x, [1], [2]) + [3]*Landau(x, [4], [5]) + [6]*Gaus(x, [7], [8])", -100, 400);
+    f4->SetParameter(0, f1->GetParameter(0));
+    f4->FixParameter(1, f1->GetParameter(1)); // fixed parameter
+    f4->SetParameter(2, f1->GetParameter(2));
+    f4->SetParameter(3, f2->GetParameter(0));
+    f4->SetParameter(4, f2->GetParameter(1));
+    f4->SetParameter(5, f2->GetParameter(2));
+    f4->SetParameter(6, f3->GetParameter(0));
+    f4->SetParameter(7, f3->GetParameter(1));
+    f4->SetParameter(8, f3->GetParameter(2));
+    f4->SetNpx(1000);
+    histo->Fit("f4", "re");
 
-    formulaFit->SetParameters(20.,20.,0.5,0.4);
-    histo->Fit(formulaFit,"rlie");
-
-//    auto *systFitSettings = new TSystFitSettings(4);
-
-    std::vector<int> nSamples = {0,3,3,3};
-    auto *systFitSettings = new TSystFitSettings(*formulaFit,nSamples);
+    std::vector<int> nSamples = {0,0,0,0,7,7,0,7,7};
+    auto *systFitSettings = new TSystFitSettings(*f4,nSamples);
 
 //    cout<<"Settings initialized"<<endl;
 //
@@ -74,9 +100,7 @@ void PerformSystFit(){
     auto *systFitter = new TSystFitter(histo);
     systFitter->SetSystFitSettings(systFitSettings);
 
-    systFitter->SystFit(formula,"srliq","",-10.,10.);
-
-    auto canv = new TCanvas("canv","canv");
+    systFitter->SystFit(f4,"srliq","",-100.,400.);
 
     systFitter->PrintResults(canv);
 }
