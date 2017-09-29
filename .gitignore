@@ -38,3 +38,5 @@ cmake-build-debug/
 AutoDict_vector_ParamValue_\.cxx
 
 AutoDict_vector_TSystFitParameter_\.cxx
+
+read_Jpsi\.cpp
