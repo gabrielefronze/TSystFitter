@@ -20,6 +20,8 @@ void CompileAllClasses(TString myopt="fast"){
     gSystem->CompileMacro("TSystFitSettings.cxx",opt);
     gSystem->CompileMacro("TSystFitter.cxx",opt);
     gSystem->CompileMacro("PerformSystFit.cxx",opt);
+    gSystem->CompileMacro("PerformRealSystFit.cxx",opt);
+    gSystem->CompileMacro("PerformRealSystFit2.cxx",opt);
 
 
 }
