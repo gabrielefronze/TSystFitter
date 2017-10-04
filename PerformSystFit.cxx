@@ -19,7 +19,7 @@ using namespace std;
 
 void PerformSystFit(){
 
-    TVirtualFitter::SetMaxIterations( 20000 );
+    TVirtualFitter::SetMaxIterations( 100000 );
 
     auto *histo = new TH1D("histo","histo",100,-10.,10.);
 
@@ -40,9 +40,9 @@ void PerformSystFit(){
     cout<<"Formula initialized"<<endl;
 
     formulaFit->SetParameters(20.,20.,0.5,0.4);
-    histo->Fit(formulaFit,"rlie");
+    histo->Fit(formulaFit,"ril");
 
-    std::vector<int> nSamples = {0,5,5,5};
+    std::vector<int> nSamples = {7,7,7,7};
     auto *systFitSettings = new TSystFitSettings(*formulaFit,nSamples);
 
     cout<<"A total of "<<systFitSettings->GetNConfigurations()<<" configurations will be tested"<<endl;
@@ -51,7 +51,7 @@ void PerformSystFit(){
     auto *systFitter = new TSystFitter(histo);
     systFitter->SetSystFitSettings(systFitSettings);
 
-    systFitter->SystFit(formula,"sreliq","",-10.,10.);
+    systFitter->SystFit(formula,"srle","",-10.,10.);
 
     auto canv = new TCanvas("canv","canv");
 

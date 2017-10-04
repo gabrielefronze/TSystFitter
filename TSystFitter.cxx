@@ -113,7 +113,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
     histoFitResultO->SetFillStyle(3003);
     histoFitResultO->SetStats(kFALSE);
 
-    std::cout<<"Printing functions...\n";
+    std::cout<<"Printing functions...\n"<<std::flush;
     int iFunc =0;
     for(auto &itFunc : fFitFunctions){
 
@@ -139,7 +139,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
         }
 
         dataFitPad->cd();
-        itFunc.Draw("SAME");
+        if (iFunc%100+1==1) itFunc.Draw("SAME");
         std::cout<<iFunc+1<<"/"<<fFitFunctions.size()<<"\r"<<std::flush;
     }
 
@@ -178,7 +178,8 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
     paramTypesExtended[kNoType] = "No type";
 
     for (int iPar = 0; iPar < nParams; ++iPar) {
-        TString parName = fFitResultsVector[0].first.Get()->ParName(iPar).c_str();
+
+        TString parName = fFitResultsVector.back().first.Get()->ParName(iPar).c_str();
         auto paramType = paramTypesExtended[fSystFitSettings->GetParameter(iPar).GetType()];
 
         parStatsPad->cd(iPar*2+1);
@@ -191,6 +192,7 @@ void TSystFitter::PrintResults(TVirtualPad *pad){
         for ( auto const &itValue : parData[iPar] ){
             histBuffer->Fill(itValue);
         }
+
         histVectData[iPar]->DrawNormalized();
 
         auto meanParValue = histVectData[iPar]->GetMean();
